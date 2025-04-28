@@ -20,6 +20,6 @@ A lightweight, open-source Python tool that performs basic web application secur
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/yourusername/mini-owasp-scanner.git
-cd mini-owasp-scanner
+git clone https://github.com/davidtbilisi/scan_owasp.git
+cd scan_owasp
 pip install -r requirements.txt
