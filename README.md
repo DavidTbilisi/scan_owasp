@@ -70,6 +70,21 @@ python scanner.py https://example.com --output results.csv
 - Path traversal (basic)
 - Information disclosure (headers, HTML comments)
 
+## 🎯 CTF-Specific Modules
+
+The scanner includes special modules for CTF platforms:
+
+- **HackTheBox (htb_ctf)**: Searches for `HTB{}` flags, exposed robots.txt, .git/config, and common admin/dev endpoints. Useful for quickly spotting HackTheBox-style clues and misconfigurations.
+- **TryHackMe (thm_ctf)**: Searches for `THM{}` and `FLAG{}` flags, exposed backup/config files, and CTF-style endpoints like `/flag`, `/secret`, `/hidden`, and `/.env`. Designed to help with TryHackMe-style CTFs.
+
+You can run these checks with:
+
+```bash
+python scanner.py https://target --checks htb_ctf,thm_ctf
+```
+
+Findings from these modules are explained in the scan summary and can help you quickly identify flags, sensitive files, or endpoints during CTFs.
+
 ## 🏷️ Finding Severity
 
 Each finding is assigned a severity level (High, Medium, Low, or Info) to help you prioritize remediation:
