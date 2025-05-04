@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import click
 from rich.console import Console
+import json
+from typing import List
 
 console = Console()
 
@@ -20,6 +22,23 @@ from modules.hsts_preload_check import check_hsts_preload
 from modules.path_traversal_check import check_path_traversal
 from modules.info_disclosure_check import check_info_disclosure
 
+# Registry of all available checks
+ALL_CHECKS = {
+    'https': check_https,
+    'headers': check_headers,
+    'sqli': check_sqli,
+    'dir_listing': check_dir_listing,
+    'xss': check_xss,
+    'server_version': check_server_version,
+    'open_redirect': check_open_redirect,
+    'cookie_flags': check_cookie_flags,
+    'cors_policy': check_cors_policy,
+    'referrer_policy': check_referrer_policy,
+    'hsts_preload': check_hsts_preload,
+    'path_traversal': check_path_traversal,
+    'info_disclosure': check_info_disclosure,
+}
+
 """
 scanner.py
 Main entry point for the modular OWASP Top 10 scanner.
@@ -28,25 +47,52 @@ Add or remove checks by importing the relevant modules and calling their functio
 """
 
 @click.command()
-@click.argument('url')
-def main(url):
+@click.argument('urls', nargs=-1)
+@click.option('--checks', default='all', help='Comma-separated list of checks to run (default: all)')
+@click.option('--output', default=None, help='Output file (JSON or CSV)')
+def main(urls: List[str], checks, output):
     """
-    Simple OWASP scanner for a given URL.
-    Each check prints its own results to the console.
+    Modular OWASP scanner for one or more URLs.
     """
-    check_https(url)
-    check_headers(url)
-    check_sqli(url)
-    check_dir_listing(url)
-    check_xss(url)
-    check_server_version(url)
-    check_open_redirect(url)
-    check_cookie_flags(url)
-    check_cors_policy(url)
-    check_referrer_policy(url)
-    check_hsts_preload(url)
-    check_path_traversal(url)
-    check_info_disclosure(url)
+    if not urls:
+        console.print('[bold red]No URLs provided![/bold red]')
+        return
+    selected_checks = list(ALL_CHECKS.keys()) if checks == 'all' else [c.strip() for c in checks.split(',') if c.strip() in ALL_CHECKS]
+    results = []
+    for url in urls:
+        console.rule(f"[bold blue]Scanning: {url}")
+        url_result = {'url': url, 'findings': []}
+        for check_name in selected_checks:
+            try:
+                # Each check should return a list of findings or None
+                finding = ALL_CHECKS[check_name](url)
+                if finding:
+                    url_result['findings'].append({check_name: finding})
+            except Exception as e:
+                console.print(f"[!] Error in {check_name}: {e}", style="yellow")
+        results.append(url_result)
+    # Summary
+    console.rule("[bold green]Scan Summary")
+    for res in results:
+        console.print(f"[bold]{res['url']}[/bold]: {len(res['findings'])} findings")
+    # Output to file
+    if output:
+        if output.endswith('.json'):
+            with open(output, 'w', encoding='utf-8') as f:
+                json.dump(results, f, indent=2)
+            console.print(f"[green]Results saved to {output}")
+        elif output.endswith('.csv'):
+            import csv
+            with open(output, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(['url', 'check', 'finding'])
+                for res in results:
+                    for finding in res['findings']:
+                        for check, detail in finding.items():
+                            writer.writerow([res['url'], check, detail])
+            console.print(f"[green]Results saved to {output}")
+        else:
+            console.print("[yellow]Unknown output format. Use .json or .csv")
 
 if __name__ == "__main__":
     main()
