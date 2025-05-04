@@ -8,14 +8,22 @@ from rich.console import Console
 console = Console()
 
 def check_cors_policy(url):
+    findings = []
     try:
         response = requests.get(url)
         cors = response.headers.get('Access-Control-Allow-Origin', None)
         if cors == '*':
-            console.print("[!] CORS policy is too permissive: Access-Control-Allow-Origin: *", style="red")
+            msg = "CORS policy is too permissive: Access-Control-Allow-Origin: *"
+            console.print(f"[!] {msg}", style="red")
+            findings.append(msg)
         elif cors:
             console.print(f"[i] CORS policy: Access-Control-Allow-Origin: {cors}")
         else:
-            console.print("[i] No CORS policy set.")
+            msg = "No CORS policy set."
+            console.print(f"[i] {msg}")
+            findings.append(msg)
     except Exception as e:
-        console.print(f"[!] Error during CORS policy check: {e}", style="yellow")
+        msg = f"Error during CORS policy check: {e}"
+        console.print(f"[!] {msg}", style="yellow")
+        findings.append(msg)
+    return findings

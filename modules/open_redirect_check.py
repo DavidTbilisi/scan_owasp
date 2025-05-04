@@ -9,6 +9,7 @@ from urllib.parse import urlparse, urljoin
 console = Console()
 
 def check_open_redirect(url):
+    findings = []
     # List of common redirect parameters
     params = ['next', 'url', 'redirect', 'redir', 'dest', 'destination']
     payload = 'https://evil.com'
@@ -19,6 +20,11 @@ def check_open_redirect(url):
             if response.status_code in [301, 302, 303, 307, 308]:
                 location = response.headers.get('Location', '')
                 if payload in location:
-                    console.print(f"[!] Possible open redirect via '{param}' parameter!", style="bold red")
+                    msg = f"Possible open redirect via '{param}' parameter!"
+                    console.print(f"[!] {msg}", style="bold red")
+                    findings.append(msg)
         except Exception as e:
-            console.print(f"[!] Error during open redirect check: {e}", style="yellow")
+            msg = f"Error during open redirect check: {e}"
+            console.print(f"[!] {msg}", style="yellow")
+            findings.append(msg)
+    return findings

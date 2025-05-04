@@ -4,6 +4,7 @@ import requests
 console = Console()
 
 def check_headers(url):
+    findings = []
     try:
         response = requests.get(url)
         headers = response.headers
@@ -15,8 +16,13 @@ def check_headers(url):
         ]
         for header in required_headers:
             if header not in headers:
-                console.print(f"[-] Missing security header: {header}", style="red")
+                msg = f"Missing security header: {header}"
+                console.print(f"[-] {msg}", style="red")
+                findings.append(msg)
             else:
                 console.print(f"[+] Found security header: {header}", style="green")
     except Exception as e:
-        console.print(f"[!] Error fetching headers: {e}", style="bold yellow")
+        msg = f"Error fetching headers: {e}"
+        console.print(f"[!] {msg}", style="bold yellow")
+        findings.append(msg)
+    return findings

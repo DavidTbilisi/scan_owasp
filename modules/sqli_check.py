@@ -8,6 +8,7 @@ from rich.console import Console
 console = Console()
 
 def check_sqli(url):
+    findings = []
     # Add a simple SQL injection payload to the URL
     test_url = url + ("?id=1' OR '1'='1" if '?' not in url else "' OR '1'='1")
     try:
@@ -20,8 +21,13 @@ def check_sqli(url):
             'sql syntax',
         ]
         if any(error in response.text.lower() for error in errors):
-            console.print("[!] Possible SQL Injection vulnerability detected!", style="bold red")
+            msg = "Possible SQL Injection vulnerability detected!"
+            console.print(f"[!] {msg}", style="bold red")
+            findings.append(msg)
         else:
             console.print("[+] No obvious SQL Injection vulnerability detected.", style="green")
     except Exception as e:
-        console.print(f"[!] Error during SQLi check: {e}", style="yellow")
+        msg = f"Error during SQLi check: {e}"
+        console.print(f"[!] {msg}", style="yellow")
+        findings.append(msg)
+    return findings

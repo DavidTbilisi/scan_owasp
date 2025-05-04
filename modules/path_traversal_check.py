@@ -9,13 +9,19 @@ from urllib.parse import urljoin
 console = Console()
 
 def check_path_traversal(url):
+    findings = []
     payload = '../etc/passwd'
     test_url = urljoin(url, f'?file={payload}')
     try:
         response = requests.get(test_url)
         if 'root:x:' in response.text or 'No such file or directory' in response.text or 'not found' in response.text:
-            console.print("[!] Possible path traversal vulnerability detected!", style="bold red")
+            msg = "Possible path traversal vulnerability detected!"
+            console.print(f"[!] {msg}", style="bold red")
+            findings.append(msg)
         else:
             console.print("[+] No obvious path traversal vulnerability detected.", style="green")
     except Exception as e:
-        console.print(f"[!] Error during path traversal check: {e}", style="yellow")
+        msg = f"Error during path traversal check: {e}"
+        console.print(f"[!] {msg}", style="yellow")
+        findings.append(msg)
+    return findings

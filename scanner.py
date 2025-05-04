@@ -64,10 +64,10 @@ def main(urls: List[str], checks, output):
         url_result = {'url': url, 'findings': []}
         for check_name in selected_checks:
             try:
-                # Each check should return a list of findings or None
-                finding = ALL_CHECKS[check_name](url)
-                if finding:
-                    url_result['findings'].append({check_name: finding})
+                findings = ALL_CHECKS[check_name](url)
+                if findings:
+                    for finding in findings:
+                        url_result['findings'].append({'check': check_name, 'detail': finding})
             except Exception as e:
                 console.print(f"[!] Error in {check_name}: {e}", style="yellow")
         results.append(url_result)
@@ -75,6 +75,8 @@ def main(urls: List[str], checks, output):
     console.rule("[bold green]Scan Summary")
     for res in results:
         console.print(f"[bold]{res['url']}[/bold]: {len(res['findings'])} findings")
+        for finding in res['findings']:
+            console.print(f"  [red]- {finding['check']}: {finding['detail']}")
     # Output to file
     if output:
         if output.endswith('.json'):
@@ -88,8 +90,7 @@ def main(urls: List[str], checks, output):
                 writer.writerow(['url', 'check', 'finding'])
                 for res in results:
                     for finding in res['findings']:
-                        for check, detail in finding.items():
-                            writer.writerow([res['url'], check, detail])
+                        writer.writerow([res['url'], finding['check'], finding['detail']])
             console.print(f"[green]Results saved to {output}")
         else:
             console.print("[yellow]Unknown output format. Use .json or .csv")

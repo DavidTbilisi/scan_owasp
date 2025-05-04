@@ -3,7 +3,11 @@ from rich.console import Console
 console = Console()
 
 def check_https(url):
+    findings = []
     if url.startswith('https://'):
         console.print("[+] HTTPS is enabled", style="green")
     else:
-        console.print("[-] HTTPS is NOT enabled", style="red")
+        msg = "HTTPS is NOT enabled"
+        console.print(f"[-] {msg}", style="red")
+        findings.append(msg)
+    return findings
