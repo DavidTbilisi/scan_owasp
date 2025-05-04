@@ -70,6 +70,17 @@ python scanner.py https://example.com --output results.csv
 - Path traversal (basic)
 - Information disclosure (headers, HTML comments)
 
+## 🏷️ Finding Severity
+
+Each finding is assigned a severity level (High, Medium, Low, or Info) to help you prioritize remediation:
+
+- **High**: Critical security risks (e.g., missing CSP, HSTS, open redirect, SQLi, XSS)
+- **Medium**: Important but less critical (e.g., missing X-Frame-Options, X-Content-Type-Options, directory listing)
+- **Low**: Informational or minor issues (e.g., missing Referrer-Policy, cookie flags)
+- **Info**: General information or errors
+
+Severity is shown in the scan summary and output files.
+
 ## 🤝 Contributing
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
