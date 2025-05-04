@@ -21,6 +21,8 @@ from modules.referrer_policy_check import check_referrer_policy
 from modules.hsts_preload_check import check_hsts_preload
 from modules.path_traversal_check import check_path_traversal
 from modules.info_disclosure_check import check_info_disclosure
+from modules.htb_ctf_check import check_htb_ctf
+from modules.thm_ctf_check import check_thm_ctf
 
 # Registry of all available checks
 ALL_CHECKS = {
@@ -37,6 +39,8 @@ ALL_CHECKS = {
     'hsts_preload': check_hsts_preload,
     'path_traversal': check_path_traversal,
     'info_disclosure': check_info_disclosure,
+    'htb_ctf': check_htb_ctf,
+    'thm_ctf': check_thm_ctf,
 }
 
 """
