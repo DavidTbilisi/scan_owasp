@@ -11,6 +11,14 @@ from modules.headers_check import check_headers
 from modules.sqli_check import check_sqli
 from modules.dir_listing_check import check_dir_listing
 from modules.xss_check import check_xss
+from modules.server_version_check import check_server_version
+from modules.open_redirect_check import check_open_redirect
+from modules.cookie_flags_check import check_cookie_flags
+from modules.cors_policy_check import check_cors_policy
+from modules.referrer_policy_check import check_referrer_policy
+from modules.hsts_preload_check import check_hsts_preload
+from modules.path_traversal_check import check_path_traversal
+from modules.info_disclosure_check import check_info_disclosure
 
 """
 scanner.py
@@ -31,6 +39,14 @@ def main(url):
     check_sqli(url)
     check_dir_listing(url)
     check_xss(url)
+    check_server_version(url)
+    check_open_redirect(url)
+    check_cookie_flags(url)
+    check_cors_policy(url)
+    check_referrer_policy(url)
+    check_hsts_preload(url)
+    check_path_traversal(url)
+    check_info_disclosure(url)
 
 if __name__ == "__main__":
     main()
