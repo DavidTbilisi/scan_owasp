@@ -18,11 +18,13 @@ def check_headers(url):
             if header not in headers:
                 msg = f"Missing security header: {header}"
                 console.print(f"[-] {msg}", style="red")
-                findings.append(msg)
+                # Assign severity based on header importance
+                severity = "High" if header in ["Content-Security-Policy", "Strict-Transport-Security"] else "Medium"
+                findings.append({"detail": msg, "severity": severity})
             else:
                 console.print(f"[+] Found security header: {header}", style="green")
     except Exception as e:
         msg = f"Error fetching headers: {e}"
         console.print(f"[!] {msg}", style="bold yellow")
-        findings.append(msg)
+        findings.append({"detail": msg, "severity": "Low"})
     return findings

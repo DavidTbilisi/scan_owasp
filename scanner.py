@@ -67,7 +67,11 @@ def main(urls: List[str], checks, output):
                 findings = ALL_CHECKS[check_name](url)
                 if findings:
                     for finding in findings:
-                        url_result['findings'].append({'check': check_name, 'detail': finding})
+                        # If finding is a dict with detail/severity, use it; else, wrap as dict
+                        if isinstance(finding, dict):
+                            url_result['findings'].append({'check': check_name, **finding})
+                        else:
+                            url_result['findings'].append({'check': check_name, 'detail': finding, 'severity': 'Info'})
             except Exception as e:
                 console.print(f"[!] Error in {check_name}: {e}", style="yellow")
         results.append(url_result)
@@ -76,7 +80,9 @@ def main(urls: List[str], checks, output):
     for res in results:
         console.print(f"[bold]{res['url']}[/bold]: {len(res['findings'])} findings")
         for finding in res['findings']:
-            console.print(f"  [red]- {finding['check']}: {finding['detail']}")
+            sev = finding.get('severity', 'Info')
+            sev_color = {'High': 'bold red', 'Medium': 'yellow', 'Low': 'blue', 'Info': 'white'}.get(sev, 'white')
+            console.print(f"  [bold]{sev}[/bold] [red]- {finding['check']}: {finding['detail']}", style=sev_color)
     # Output to file
     if output:
         if output.endswith('.json'):
