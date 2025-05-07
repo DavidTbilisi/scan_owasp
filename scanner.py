@@ -23,6 +23,8 @@ from modules.path_traversal_check import check_path_traversal
 from modules.info_disclosure_check import check_info_disclosure
 from modules.htb_ctf_check import check_htb_ctf
 from modules.thm_ctf_check import check_thm_ctf
+from modules.idor_check import check_idor
+from modules.verb_tampering_check import check_verb_tampering
 
 # Registry of all available checks
 ALL_CHECKS = {
@@ -41,6 +43,8 @@ ALL_CHECKS = {
     'info_disclosure': check_info_disclosure,
     'htb_ctf': check_htb_ctf,
     'thm_ctf': check_thm_ctf,
+    'idor': check_idor,
+    'verb_tampering': check_verb_tampering,
 }
 
 """
@@ -52,14 +56,27 @@ Add or remove checks by importing the relevant modules and calling their functio
 
 @click.command()
 @click.argument('urls', nargs=-1)
-@click.option('--checks', default='all', help='Comma-separated list of checks to run (default: all)')
+@click.option('--checks', default='all', help='Comma-separated list of checks to run (e.g. "https,headers,xss,idor,verb_tampering"). Use "all" to run every check. Run with --list-checks to see available checks. (default: all)')
+@click.option('--list-checks', is_flag=True, default=False, help='List all available checks and exit.')
 @click.option('--output', default=None, help='Output file (JSON or CSV)')
-def main(urls: List[str], checks, output):
+def main(urls: List[str], checks, output, list_checks):
     """
     Modular OWASP scanner for one or more URLs.
     """
+    if list_checks:
+        console.print("[bold green]Available checks:")
+        for check in ALL_CHECKS:
+            console.print(f"- {check}")
+        return
     if not urls:
         console.print('[bold red]No URLs provided![/bold red]')
+        console.print('[yellow]Usage: python scanner.py <url1> [url2 ...] --checks <check1,check2,...>')
+        console.print('[yellow]Use --list-checks to see all available checks.')
+        return
+    if checks == '':
+        console.print('[bold red]Error: Option --checks requires an argument.[/bold red]')
+        console.print('[yellow]Example: --checks https,headers,xss')
+        console.print('[yellow]Use --list-checks to see all available checks.')
         return
     selected_checks = list(ALL_CHECKS.keys()) if checks == 'all' else [c.strip() for c in checks.split(',') if c.strip() in ALL_CHECKS]
     results = []
