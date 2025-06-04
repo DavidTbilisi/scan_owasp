@@ -1,6 +1,4 @@
-from rich.console import Console
-
-console = Console()
+from utils import console
 
 def check_https(url):
     findings = []
