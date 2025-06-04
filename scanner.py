@@ -1,11 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import click
-from rich.console import Console
+from utils import console
 import json
 from typing import List
-
-console = Console()
 
 import click
 from modules.https_check import check_https
